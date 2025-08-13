@@ -3,6 +3,7 @@ class_name Player extends CharacterBody2D
 const SPEED = 100.0
 const ROLL_SPEED = 125.0
 
+var momentum:float = 1.0
 var input_vector: = Vector2.ZERO
 var last_input_vector: = Vector2.ZERO
 
@@ -13,7 +14,7 @@ func _physics_process(delta: float) -> void:
 	var state = playback.get_current_node()
 	match state:
 		"MoveState": move_state(delta)
-		"AttackState": pass
+		"AttackState": attack_state(delta)
 		"RollState": roll_state(delta)
 
 func move_state(delta: float) -> void:
@@ -36,6 +37,12 @@ func move_state(delta: float) -> void:
 func roll_state(delta: float) -> void:
 	velocity = last_input_vector.normalized() * ROLL_SPEED
 	move_and_slide()
+
+func attack_state(delta:float) -> void:
+	momentum -= 0.01
+	velocity = last_input_vector.normalized() * SPEED * momentum
+	move_and_slide()
+	
 
 func update_blend_positions(direction_vector: Vector2) -> void:
 	animation_tree.set("parameters/StateMachine/MoveState/RunState/blend_position", direction_vector)
